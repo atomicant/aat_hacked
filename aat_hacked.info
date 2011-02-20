@@ -1,0 +1,6 @@
+; $Id$
+name = Page Hacked
+description = Overrides certain path with "Drupal hacked page" and alters some forms
+dependencies[] = antspeak
+package = AtomicAnt Trainings
+core = 6.x

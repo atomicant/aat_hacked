@@ -1,0 +1,117 @@
+<?php
+// $Id$
+
+/**
+ * @file
+ * TODO: Write module description
+ *
+ * @author AtomicAnt Ltd., http://atomicant.co.uk
+ *
+ */
+
+/**
+ * Implementation of hook_menu_alter()
+ */
+function aat_hacked_menu_alter(&$items) {
+  $items['node']['page callback'] = 'aat_hacked_node_page';
+}
+
+/**
+* Implementation of hook_menu_link_alter().
+*
+* @param $item
+*   Associative array defining a menu link as passed into menu_link_save().
+* @param $menu
+*   Associative array containing the menu router returned from
+*   menu_router_build().
+*/
+function aat_hacked_menu_link_alter(&$item, $menu) {
+  if ($item['link_path'] == 'logout') {
+    $item['link_title'] = 'Sign off from Nest';
+  }
+  elseif ($item['link_path'] == array('user/login')) {
+    $item['link_title'] = 'Log in to the Nest';
+  }
+
+  // For more interesting implementation of this hook, look e.g.
+  // devel_menu_link_alter()
+  // devel_translated_menu_link_alter();
+}
+
+/**
+ * Page callback
+ */
+function aat_hacked_node_page() {
+  $output = '';
+  $output .= aat_hacked_by_ants();
+  $output .= node_page_default();
+  return $output;
+}
+
+/**
+ * Helper function which displays 'Hacked by Ants screen'
+ *
+ * @return string
+ */
+function aat_hacked_by_ants() {
+  $output = '';
+  $output .= '<h1>'. t('This page has been HACKED by the Evil Orange Ants!') .'</h1>';
+  $output .= theme('aat_big_orange_ant');
+  $output .= '<p>'. t('For help please contact the mighty <a href="@url">
+    Atomic Ant</a> &hellip; or just disable the %module.',
+    array(
+      '@url' => url('http://atomicant.co.uk', array('external' => TRUE)),
+      '%module' => basename(__FILE__),
+    )) .'</p>';
+  return $output;
+}
+
+/**
+ * Implementation of hook_init().
+ */
+function aat_hacked_init() {
+  antspeak_set_message(t('I own this page: q=@query', array('@query' => $_GET['q'])));
+}
+
+/**
+ * Implementation of hook_form_alter().
+ */
+function aat_hacked_form_alter(&$form, &$form_state, $form_id) {
+  $form['ant'] = array(
+    '#weight' => -99,
+    '#value' => antspeak_speak(t('I own this form: form_id=@form_id', array('@form_id' => $form_id))),
+  );
+}
+
+/**
+ * Implementation of hook_theme().
+ */
+function aat_hacked_theme() {
+  return array(
+    'aat_big_orange_ant' => array(
+      'variables' => array(),
+    ),
+  );
+}
+
+/**
+ * Returns a Big Orange ASCII Ant
+ *
+ * Credits: http://chris.com/ASCII/index.php?art=animals/insects/ants
+ */
+function theme_aat_big_orange_ant() {
+  return "<pre style=\"color:orange;line-height:100%;\">
+
+           \       /
+            \     /
+             \.-./
+            (o\^/o)  _   _   _     __
+             ./ \.\ ( )-( )-( ) .-'  '-.
+              {-} \(//  ||   \\/ (   )) '-.
+           /|      //-__||__.-\\.       .-'
+     -----/ |--    (/    ()     \)'-._.-'
+    <  HACKED! >   ||    ||      \\
+     ----------   ('    ('       ')
+
+  </pre>";
+}
